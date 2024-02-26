@@ -6,7 +6,9 @@ on:
 jobs:
   comment:
     runs-on: ubuntu-latest
-    pull-requests: write
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - name: Comment on Pull Requests
         uses: nflaig/release-comment-on-pr@v1

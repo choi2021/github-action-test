@@ -2,7 +2,7 @@ name: Create Milestone
 on:
   push:
     branches:
-      - develop
+      - main
 
 jobs:
   generate:

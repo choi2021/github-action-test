@@ -21,18 +21,22 @@ jobs:
           milestones=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/$GITHUB_REPOSITORY/milestones | jq -r '.[].title')
           if [[ $milestones != *"$date"* ]]; then
             echo "::set-output name=exists::false"
-            echo "Creating a new milestone for $date"
-            uses: oinume/create-scheduled-milestone-action@v1.0.0
-            with:
-              title: $date
-              state: "open"
-              due_on: $iso_date
-            env:
-              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            echo "::set-output name=date::$date"
+            echo "::set-output name=iso_date::$iso_date"
           else
             echo "::set-output name=exists::true"
           fi
         shell: bash
+
+      - name: "Create a new milestone for next Wednesday"
+        uses: oinume/create-scheduled-milestone-action@v1.0.0
+        with:
+          title: ${{ steps.next-wednesday.outputs.date }}
+          state: "open"
+          due_on: ${{ steps.next-wednesday.outputs.iso_date }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        if: steps.next-wednesday.outputs.exists == 'false'
 
       - name: Get the date of the Wednesday after next and check if milestone exists
         id: next-next-wednesday
@@ -42,15 +46,19 @@ jobs:
           milestones=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/$GITHUB_REPOSITORY/milestones | jq -r '.[].title')
           if [[ $milestones != *"$date"* ]]; then
             echo "::set-output name=exists::false"
-            echo "Creating a new milestone for $date"
-            uses: oinume/create-scheduled-milestone-action@v1.0.0
-            with:
-              title: $date
-              state: "open"
-              due_on: $iso_date
-            env:
-              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            echo "::set-output name=date::$date"
+            echo "::set-output name=iso_date::$iso_date"
           else
             echo "::set-output name=exists::true"
           fi
         shell: bash
+
+      - name: "Create a new milestone for the Wednesday after next"
+        uses: oinume/create-scheduled-milestone-action@v1.0.0
+        with:
+          title: ${{ steps.next-next-wednesday.outputs.date }}
+          state: "open"
+          due_on: ${{ steps.next-next-wednesday.outputs.iso_date }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        if: steps.next-next-wednesday.outputs.exists == 'false'

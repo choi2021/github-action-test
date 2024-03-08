@@ -16,7 +16,7 @@ jobs:
       - name: Get the date of next Wednesday and check if milestone exists
         id: next-wednesday
         run: |
-          date=$(TZ=Asia/Seoul date -d 'next thursday' +%y.%m.%d)
+          date=$(TZ=Asia/Seoul date -d 'next wednesday' +%y.%m.%d)
           iso_date=$(TZ=Asia/Seoul date -d 'next thursday' +%Y-%m-%dT%H:%M:%SZ)
           milestones=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/$GITHUB_REPOSITORY/milestones | jq -r '.[].title')
           if [[ $milestones != *"$date"* ]]; then
@@ -41,7 +41,7 @@ jobs:
       - name: Get the date of the Wednesday after next and check if milestone exists
         id: next-next-wednesday
         run: |
-          date=$(TZ=Asia/Seoul date -d '2 weeks next thursday' +%y.%m.%d)
+          date=$(TZ=Asia/Seoul date -d '2 weeks next wednesday' +%y.%m.%d)
           iso_date=$(TZ=Asia/Seoul date -d '2 weeks next thursday' +%Y-%m-%dT%H:%M:%SZ)
           milestones=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/$GITHUB_REPOSITORY/milestones | jq -r '.[].title')
           if [[ $milestones != *"$date"* ]]; then

@@ -7,6 +7,8 @@ jobs:
     steps:
       - name: Create Milestone
         uses: WyriHaximus/github-action-create-milestone@v1.1.1
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         with:
-          env: ${{ secrets.GITHUB_TOKEN }}
-          title: 'v1.0.0'
+          title: '다음 배포일'
+

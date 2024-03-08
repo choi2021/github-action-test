@@ -1,4 +1,5 @@
 name: Create Milestone
+run-name: Create a new milestone for the next release
 on:
   push:
     branches:

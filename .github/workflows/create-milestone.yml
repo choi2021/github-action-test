@@ -15,12 +15,12 @@ jobs:
 
       - name: Get the date of next Wednesday
         id: get-next-wednesday
-        run: echo "::set-output name=date::$(date -d 'next wednesday' +%d.%m.%y)"
+        run: echo "::set-output name=date::$(date -d 'next wednesday' +%y.%m.%d)"
         shell: bash
 
       - name: Get the date of the Wednesday after next
         id: get-next-next-wednesday
-        run: echo "::set-output name=date::$(date -d '2 weeks next wednesday' +%d.%m.%y)"
+        run: echo "::set-output name=date::$(date -d '2 weeks next wednesday' +%y.%m.%d)"
         shell: bash
 
       - name: "Create a new milestone for next Wednesday"
@@ -29,7 +29,6 @@ jobs:
         with:
           title: ${{ steps.get-next-wednesday.outputs.date }}
           state: "open"
-          description: "Milestone for the week of ${{ steps.get-next-wednesday.outputs.date }}"
           due_on: ${{ steps.get-next-wednesday.outputs.date }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -40,7 +39,6 @@ jobs:
         with:
           title: ${{ steps.get-next-next-wednesday.outputs.date }}
           state: "open"
-          description: "Milestone for the week of ${{ steps.get-next-next-wednesday.outputs.date }}"
           due_on: ${{ steps.get-next-next-wednesday.outputs.date }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,9 @@
+name: Create Milestone
+uses: WyriHaximus/github-action-create-milestone@v1.1.1
+with:
+      token: ${{ secrets.GITHUB_TOKEN }}
+      title: 'v1.0.0'
+      description: 'First release'
+      due_on: '2020-01-01T00:00:00Z'
+      state: 'open'
+      repository: ${{ github.repository }}

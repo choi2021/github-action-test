@@ -13,60 +13,42 @@ jobs:
         with:
           ref: main
 
-      - name: Get the date of next Wednesday
-        id: get-next-wednesday
+      - name: Define functions
+        id: define-functions
         run: |
-          echo "::set-output name=date::$(TZ=Asia/Seoul date -d 'next wednesday' +%y.%m.%d)"
-          echo "::set-output name=iso_date::$(TZ=Asia/Seoul date -d 'next thursday' +%Y-%m-%dT%H:%M:%SZ)"
+          function get_date() {
+            echo "::set-output name=date::$(TZ=Asia/Seoul date -d "$1" +%y.%m.%d)"
+            echo "::set-output name=iso_date::$(TZ=Asia/Seoul date -d "$1" +%Y-%m-%dT%H:%M:%SZ)"
+          }
+
+          function check_and_create_milestone() {
+            milestones=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/$GITHUB_REPOSITORY/milestones | jq -r '.[].title')
+            if [[ $milestones != *"$1"* ]]; then
+              echo "::set-output name=exists::false"
+              echo "Creating a new milestone for $1"
+              uses: oinume/create-scheduled-milestone-action@v1.0.0
+              with:
+                title: $1
+                state: "open"
+                due_on: $2
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            else
+              echo "::set-output name=exists::true"
+            fi
+          }
         shell: bash
 
-      - name: Get the date of the Wednesday after next
-        id: get-next-next-wednesday
+      - name: Get the date of next Wednesday and create milestone
+        id: next-wednesday
         run: |
-          echo "::set-output name=date::$(TZ=Asia/Seoul date -d '2 weeks next wednesday' +%y.%m.%d)"
-          echo "::set-output name=iso_date::$(TZ=Asia/Seoul date -d '2 weeks next thursday' +%Y-%m-%dT%H:%M:%SZ)"
+          get_date 'next thursday'
+          check_and_create_milestone ${{ steps.define-functions.outputs.date }} ${{ steps.define-functions.outputs.iso_date }}
         shell: bash
 
-      - name: Check if milestone already exists
-        id: check-milestone
+      - name: Get the date of the Wednesday after next and create milestone
+        id: next-next-wednesday
         run: |
-          milestones=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/$GITHUB_REPOSITORY/milestones | jq -r '.[].title')
-          if [[ $milestones == *"${{ steps.get-next-wednesday.outputs.date }}"* ]]; then
-            echo "::set-output name=exists::true"
-          else
-            echo "::set-output name=exists::false"
-          fi
+          get_date '2 weeks next thursday'
+          check_and_create_milestone ${{ steps.define-functions.outputs.date }} ${{ steps.define-functions.outputs.iso_date }}
         shell: bash
-
-      - name: "Create a new milestone for next Wednesday"
-        id: create-milestone-next
-        uses: oinume/create-scheduled-milestone-action@v1.0.0
-        with:
-          title: ${{ steps.get-next-wednesday.outputs.date }}
-          state: "open"
-          due_on: ${{ steps.get-next-wednesday.outputs.iso_date }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        if: steps.check-milestone.outputs.exists == 'false'
-
-      - name: Check if next next milestone already exists
-        id: check-next-next-milestone
-        run: |
-          milestones=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/$GITHUB_REPOSITORY/milestones | jq -r '.[].title')
-          if [[ $milestones == *"${{ steps.get-next-next-wednesday.outputs.date }}"* ]]; then
-            echo "::set-output name=exists::true"
-          else
-            echo "::set-output name=exists::false"
-          fi
-        shell: bash
-
-      - name: "Create a new milestone for the Wednesday after next"
-        id: create-milestone-next-next
-        uses: oinume/create-scheduled-milestone-action@v1.0.0
-        with:
-          title: ${{ steps.get-next-next-wednesday.outputs.date }}
-          state: "open"
-          due_on: ${{ steps.get-next-next-wednesday.outputs.iso_date }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        if: steps.check-next-next-milestone.outputs.exists == 'false'

@@ -27,6 +27,17 @@ jobs:
           echo "::set-output name=iso_date::$(TZ=Asia/Seoul date -d '2 weeks next thursday' +%Y-%m-%dT%H:%M:%SZ)"
         shell: bash
 
+      - name: Check if milestone already exists
+        id: check-milestone
+        run: |
+          milestones=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/$GITHUB_REPOSITORY/milestones | jq -r '.[].title')
+          if [[ $milestones == *"${{ steps.get-next-wednesday.outputs.date }}"* ]]; then
+            echo "::set-output name=exists::true"
+          else
+            echo "::set-output name=exists::false"
+          fi
+        shell: bash
+
       - name: "Create a new milestone for next Wednesday"
         id: create-milestone-next
         uses: oinume/create-scheduled-milestone-action@v1.0.0
@@ -36,6 +47,18 @@ jobs:
           due_on: ${{ steps.get-next-wednesday.outputs.iso_date }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        if: steps.check-milestone.outputs.exists == 'false'
+
+      - name: Check if next next milestone already exists
+        id: check-next-next-milestone
+        run: |
+          milestones=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/$GITHUB_REPOSITORY/milestones | jq -r '.[].title')
+          if [[ $milestones == *"${{ steps.get-next-next-wednesday.outputs.date }}"* ]]; then
+            echo "::set-output name=exists::true"
+          else
+            echo "::set-output name=exists::false"
+          fi
+        shell: bash
 
       - name: "Create a new milestone for the Wednesday after next"
         id: create-milestone-next-next
@@ -46,3 +69,4 @@ jobs:
           due_on: ${{ steps.get-next-next-wednesday.outputs.iso_date }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        if: steps.check-next-next-milestone.outputs.exists == 'false'

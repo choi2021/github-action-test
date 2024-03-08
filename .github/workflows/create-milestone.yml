@@ -17,14 +17,14 @@ jobs:
         id: get-next-wednesday
         run: |
           echo "::set-output name=date::$(TZ=Asia/Seoul date -d 'next wednesday' +%y.%m.%d)"
-          echo "::set-output name=iso_date::$(TZ=Asia/Seoul date -d 'next wednesday' +%Y-%m-%dT%H:%M:%SZ)"
+          echo "::set-output name=iso_date::$(TZ=Asia/Seoul date -d 'next thursday' +%Y-%m-%dT%H:%M:%SZ)"
         shell: bash
 
       - name: Get the date of the Wednesday after next
         id: get-next-next-wednesday
         run: |
           echo "::set-output name=date::$(TZ=Asia/Seoul date -d '2 weeks next wednesday' +%y.%m.%d)"
-          echo "::set-output name=iso_date::$(TZ=Asia/Seoul date -d '2 weeks next wednesday' +%Y-%m-%dT%H:%M:%SZ)"
+          echo "::set-output name=iso_date::$(TZ=Asia/Seoul date -d '2 weeks next thursday' +%Y-%m-%dT%H:%M:%SZ)"
         shell: bash
 
       - name: "Create a new milestone for next Wednesday"

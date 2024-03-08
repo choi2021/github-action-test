@@ -15,12 +15,12 @@ jobs:
 
       - name: Get the date of next Wednesday
         id: get-next-wednesday
-        run: echo "::set-output name=date::$(date -d 'next wednesday' +%Y-%m-%dT%H:%M:%S%Z)"
+        run: echo "::set-output name=date::$(date -d 'next wednesday' +%Y-%m-%dT%H:%M:%SZ)"
         shell: bash
 
       - name: Get the date of the Wednesday after next
         id: get-next-next-wednesday
-        run: echo "::set-output name=date::$(date -d '2 weeks next wednesday' +%Y-%m-%dT%H:%M:%S%Z)"
+        run: echo "::set-output name=date::$(date -d '2 weeks next wednesday' +%Y-%m-%dT%H:%M:%SZ)"
         shell: bash
 
       - name: "Create a new milestone for next Wednesday"

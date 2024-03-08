@@ -1,5 +1,5 @@
-name: Create Milestones
-run-name: Create new milestones for the next two weeks
+name: 마일스톤 생성
+run-name: 마일스톤 생성
 on:
   push:
     branches:
@@ -13,7 +13,7 @@ jobs:
         with:
           ref: main
 
-      - name: Get the date of next Wednesday and check if milestone exists
+      - name: 차주 수요일 날짜 가져오기
         id: next-wednesday
         run: |
           date=$(TZ=Asia/Seoul date -d 'next wednesday' +%y.%m.%d)
@@ -28,7 +28,7 @@ jobs:
           fi
         shell: bash
 
-      - name: "Create a new milestone for next Wednesday"
+      - name: 차주 수요일 마일스톤 생성
         uses: oinume/create-scheduled-milestone-action@v1.0.0
         with:
           title: ${{ steps.next-wednesday.outputs.date }}
@@ -38,7 +38,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         if: steps.next-wednesday.outputs.exists == 'false'
 
-      - name: Get the date of the Wednesday after next and check if milestone exists
+      - name: 차차주 수요일 날짜 가져오기
         id: next-next-wednesday
         run: |
           date=$(TZ=Asia/Seoul date -d '2 weeks next wednesday' +%y.%m.%d)
@@ -53,7 +53,7 @@ jobs:
           fi
         shell: bash
 
-      - name: "Create a new milestone for the Wednesday after next"
+      - name: 차차주 수요일 마일스톤 생성
         uses: oinume/create-scheduled-milestone-action@v1.0.0
         with:
           title: ${{ steps.next-next-wednesday.outputs.date }}

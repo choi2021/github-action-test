@@ -1,5 +1,5 @@
-name: Create Milestone
-run-name: Create a new milestone for the next release
+name: Create Milestones
+run-name: Create new milestones for the next two weeks
 on:
   push:
     branches:
@@ -14,17 +14,33 @@ jobs:
           ref: main
 
       - name: Get the date of next Wednesday
-        id: get-date
+        id: get-next-wednesday
         run: echo "::set-output name=date::$(date -d 'next wednesday' +%Y-%m-%d)"
         shell: bash
 
-      - name: "Create a new milestone"
-        id: create-milestone
+      - name: Get the date of the Wednesday after next
+        id: get-next-next-wednesday
+        run: echo "::set-output name=date::$(date -d '2 weeks next wednesday' +%Y-%m-%d)"
+        shell: bash
+
+      - name: "Create a new milestone for next Wednesday"
+        id: create-milestone-next
         uses: WyriHaximus/github-action-create-milestone@v1
         with:
-          title: ${{ steps.get-date.outputs.date }}
+          title: "Milestone for ${{ steps.get-next-wednesday.outputs.date }}"
           state: "open"
-          description: "Milestone for the week of ${{ steps.get-date.outputs.date }}"
-          due_on: ${{ steps.get-date.outputs.date }}
+          description: "Milestone for the week of ${{ steps.get-next-wednesday.outputs.date }}"
+          due_on: ${{ steps.get-next-wednesday.outputs.date }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: "Create a new milestone for the Wednesday after next"
+        id: create-milestone-next-next
+        uses: WyriHaximus/github-action-create-milestone@v1
+        with:
+          title: "Milestone for ${{ steps.get-next-next-wednesday.outputs.date }}"
+          state: "open"
+          description: "Milestone for the week of ${{ steps.get-next-next-wednesday.outputs.date }}"
+          due_on: ${{ steps.get-next-next-wednesday.outputs.date }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

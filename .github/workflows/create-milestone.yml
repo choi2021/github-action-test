@@ -10,9 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: main
-
       - name: 차주 수요일 날짜 가져오기
         id: next-wednesday
         run: |
@@ -20,11 +17,11 @@ jobs:
           iso_date=$(TZ=Asia/Seoul date -d 'next thursday' +%Y-%m-%dT%H:%M:%SZ)
           milestones=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/$GITHUB_REPOSITORY/milestones | jq -r '.[].title')
           if [[ $milestones != *"$date"* ]]; then
-            echo "::set-output name=exists::false"
-            echo "::set-output name=date::$date"
-            echo "::set-output name=iso_date::$iso_date"
+            echo "exists=false" >> $GITHUB_ENV
+            echo "date=$date" >> $GITHUB_ENV
+            echo "iso_date=$iso_date" >> $GITHUB_ENV
           else
-            echo "::set-output name=exists::true"
+            echo "exists=true" >> $GITHUB_ENV
           fi
         shell: bash
 
@@ -38,27 +35,52 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         if: steps.next-wednesday.outputs.exists == 'false'
 
-      - name: 차차주 수요일 날짜 가져오기
-        id: next-next-wednesday
+      - name: 2주 후 수요일 날짜 가져오기
+        id: two-weeks-later-wednesday
         run: |
           date=$(TZ=Asia/Seoul date -d '2 weeks next wednesday' +%y.%m.%d)
           iso_date=$(TZ=Asia/Seoul date -d '2 weeks next thursday' +%Y-%m-%dT%H:%M:%SZ)
           milestones=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/$GITHUB_REPOSITORY/milestones | jq -r '.[].title')
           if [[ $milestones != *"$date"* ]]; then
-            echo "::set-output name=exists::false"
-            echo "::set-output name=date::$date"
-            echo "::set-output name=iso_date::$iso_date"
+            echo "exists=false" >> $GITHUB_ENV
+            echo "date=$date" >> $GITHUB_ENV
+            echo "iso_date=$iso_date" >> $GITHUB_ENV
           else
-            echo "::set-output name=exists::true"
+             echo "exists=true" >> $GITHUB_ENV
           fi
         shell: bash
 
-      - name: 차차주 수요일 마일스톤 생성
+      - name: 2주 후 수요일 마일스톤 생성
         uses: oinume/create-scheduled-milestone-action@v1.0.0
         with:
-          title: ${{ steps.next-next-wednesday.outputs.date }}
+          title: ${{ steps.two-weeks-later-wednesday.outputs.date }}
           state: "open"
-          due_on: ${{ steps.next-next-wednesday.outputs.iso_date }}
+          due_on: ${{ steps.two-weeks-later-wednesday.outputs.iso_date }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        if: steps.next-next-wednesday.outputs.exists == 'false'
+        if: steps.two-weeks-later-wednesday.outputs.exists == 'false'
+
+      - name: 3주 후 수요일 날짜 가져오기
+        id: three-weeks-later-wednesday
+        run: |
+          date=$(TZ=Asia/Seoul date -d '3 weeks next wednesday' +%y.%m.%d)
+          iso_date=$(TZ=Asia/Seoul date -d '3 weeks next thursday' +%Y-%m-%dT%H:%M:%SZ)
+          milestones=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/$GITHUB_REPOSITORY/milestones | jq -r '.[].title')
+          if [[ $milestones != *"$date"* ]]; then
+            echo "exists=false" >> $GITHUB_ENV
+            echo "date=$date" >> $GITHUB_ENV
+            echo "iso_date=$iso_date" >> $GITHUB_ENV
+          else
+            echo "exists=true" >> $GITHUB_ENV
+          fi
+        shell: bash
+
+      - name: 3주 후 수요일 마일스톤 생성
+        uses: oinume/create-scheduled-milestone-action@v1.0.0
+        with:
+          title: ${{ steps.three-weeks-later-wednesday.outputs.date }}
+          state: "open"
+          due_on: ${{ steps.three-weeks-later-wednesday.outputs.iso_date }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        if: steps.three-weeks-later-wednesday.outputs.exists == 'false'

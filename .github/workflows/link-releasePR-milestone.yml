@@ -1,0 +1,51 @@
+name: Link Milestone to PR
+
+on:
+  pull_request:
+    types: [opened, edited]
+
+jobs:
+  link-milestone:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Link Milestone
+        uses: actions/github-script@v5
+        with:
+          script: |
+            const github = require('@actions/github');
+            const core = require('@actions/core');
+            const { context } = github;
+            const { pull_request } = context.payload;
+
+            // Extract target branch name
+            const targetBranch = pull_request.base.ref;
+
+            // Check if the target branch matches the 'release/*' pattern
+            const releasePattern = /^release\/(\d{2})-(\d{2})-(\d{2})$/;
+            const match = targetBranch.match(releasePattern);
+
+            if (match) {
+              const milestoneTitle = `${match[1]}.${match[2]}.${match[3]}`;
+
+              // Find the milestone by title
+              const milestones = await github.rest.issues.listMilestones({
+                ...context.repo,
+                state: 'open',
+              });
+
+              const milestone = milestones.data.find(m => m.title === milestoneTitle);
+
+              if (milestone) {
+                // Link the milestone to the PR
+                await github.rest.issues.update({
+                  ...context.repo,
+                  issue_number: pull_request.number,
+                  milestone: milestone.number,
+                });
+                console.log(`Milestone '${milestoneTitle}' linked to PR #${pull_request.number}`);
+              } else {
+                console.log(`Milestone '${milestoneTitle}' not found.`);
+              }
+            } else {
+              console.log(`The target branch '${targetBranch}' does not match the release pattern.`);
+            }

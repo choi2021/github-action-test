@@ -1,0 +1,2 @@
+Integration-QA:
+- head-branch: ['release/*']

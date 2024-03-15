@@ -1,0 +1,43 @@
+name: Get Date
+on:
+  workflow_call:
+    inputs:
+      weeks_ahead:
+        required: true
+        type: string
+      day_of_week:
+        required: true
+        type: string
+      timezone:
+        required: true
+        type: string
+    outputs:
+      date:
+        value: ${{ jobs.get_date.outputs.date }}
+      iso_date:
+        value: ${{ jobs.get_date.outputs.iso_date }}
+      exists:
+        value: ${{ jobs.get_date.outputs.exists }}
+
+jobs:
+  get_date:
+    runs-on: ubuntu-latest
+    outputs:
+      date: ${{ steps.get_date.outputs.date }}
+      iso_date: ${{ steps.get_date.outputs.iso_date }}
+      exists: ${{ steps.get_date.outputs.exists }}
+    steps:
+      - name: Get Date
+        id: get_date
+        run: |
+          date=$(TZ=${{ inputs.timezone }} date -d '${{ inputs.weeks_ahead }} weeks ${{ inputs.day_of_week }}' +%y.%m.%d)
+          iso_date=$(TZ=${{ inputs.timezone }} date -d '${{ inputs.weeks_ahead }} weeks next ${{ inputs.day_of_week }}' +%Y-%m-%dT%H:%M:%SZ)
+          milestones=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/$GITHUB_REPOSITORY/milestones | jq -r '.[].title')
+          if [[ $milestones != *"$date"* ]]; then
+            echo "exists=false" >> $GITHUB_ENV
+            echo "date=$date" >> $GITHUB_ENV
+            echo "iso_date=$iso_date" >> $GITHUB_ENV
+          else
+            echo "exists=true" >> $GITHUB_ENV
+          fi
+        shell: bash

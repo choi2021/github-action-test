@@ -1,0 +1,2 @@
+Integration-QA:
+  head: "release/*"

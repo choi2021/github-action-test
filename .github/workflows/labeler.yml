@@ -3,7 +3,7 @@ name: Auto Labeler
 on:
   pull_request_target:
     branches:
-      - release
+      - main
     types: [opened, synchronize, reopened]
 
 jobs:

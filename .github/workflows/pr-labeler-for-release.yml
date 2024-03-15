@@ -1,5 +1,9 @@
 name: release 타겟 PR label생성
-on: pull_request
+on:
+  pull_request_target:
+    branches:
+      - main
+    types: [opened, synchronize, reopened]
 
 
 jobs:
@@ -7,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Label PRs
-        if: github.event.action == 'opened' # Only run the action when the PR was first opened
-        uses: ffittschen/pr-branch-labeler@v1
+        uses: actions/labeler@v3
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          configuration-path: .github/release-label-config.yml

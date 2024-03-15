@@ -1,27 +1,16 @@
-name: Label integration-QA PRs
+name: Auto Labeler
 
 on:
-  pull_request:
-    types: [opened, reopened, edited]
+  pull_request_target:
     branches:
-      - main
+      - release
+    types: [opened, synchronize, reopened]
 
 jobs:
-  label:
+  triage:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Add label
-        uses: actions/github-script@v3
+      - uses: actions/labeler@v3
         with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
-          script: |
-            const prNumber = context.payload.pull_request.number;
-            const repository = context.repo;
-            await github.issues.addLabels({
-              ...repository,
-              issue_number: prNumber,
-              labels: ['integration-QA']
-            });
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          configuration-path: .github/labeler.yml

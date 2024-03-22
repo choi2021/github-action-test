@@ -1,16 +1,17 @@
-name: release 타겟 PR label생성
+name: 통합 QA label생성
 on:
   pull_request_target:
     branches:
-      - main
-    types: [opened, synchronize, reopened]
+      - release/*
+      - hotfix/*
+    types: [opened, reopened]
 
 
 jobs:
   label_prs:
     runs-on: ubuntu-latest
     steps:
-      - name: Label PRs
+      - name: PR 라벨 추가
         uses: actions/labeler@v3
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"

@@ -99,5 +99,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           recurrence: 'FREQ=WEEKLY;BYDAY=WED;DTSTART=20240327T000000Z'
-          format: 'Done 06-Jan-02'
+          format: 'YYYY-MM-DD'
           count: 4

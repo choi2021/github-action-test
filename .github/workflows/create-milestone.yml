@@ -15,7 +15,7 @@ jobs:
         run: |
           iso_date=$(TZ=Asia/Seoul date -d 'next wednesday' +%Y-%m-%dT%H:%M:%SZ)
           echo "iso_date: $iso_date"
-          milestones=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/$GITHUB_REPOSITORY/milestones | jq -r '.[].due_on')
+          milestones=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/$GITHUB_REPOSITORY/milestones | jq -r '.[].due_on' | cut -d'T' -f1)
           echo "milestones: $milestones"
           if [[ $milestones != *"$iso_date"* ]]; then
             echo "Comparison result: false"
@@ -42,7 +42,7 @@ jobs:
         run: |
           iso_date=$(TZ=Asia/Seoul date -d '2 weeks next wednesday' +%Y-%m-%dT%H:%M:%SZ)
           echo "iso_date: $iso_date"
-          milestones=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/$GITHUB_REPOSITORY/milestones | jq -r '.[].due_on')
+          milestones=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/$GITHUB_REPOSITORY/milestones | jq -r '.[].due_on' | cut -d'T' -f1)
           echo "milestones: $milestones"
           if [[ $milestones != *"$iso_date"* ]]; then
             echo "Comparison result: false"
@@ -69,7 +69,7 @@ jobs:
         run: |
           iso_date=$(TZ=Asia/Seoul date -d '3 weeks next wednesday' +%Y-%m-%dT%H:%M:%SZ)
           echo "iso_date: $iso_date"
-          milestones=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/$GITHUB_REPOSITORY/milestones | jq -r '.[].due_on')
+          milestones=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/$GITHUB_REPOSITORY/milestones | jq -r '.[].due_on' | cut -d'T' -f1)
           echo "milestones: $milestones"
           if [[ $milestones != *"$iso_date"* ]]; then
             echo "Comparison result: false"

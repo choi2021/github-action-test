@@ -98,6 +98,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          recurrence: 'FREQ=WEEKLY;BYDAY=WED;DTSTART=20240327T000000Z'
+          recurrence: 'FREQ=WEEKLY;BYDAY=WE;DTSTART=20240327T000000Z'
           format: 'YYYY-MM-DD'
           count: 4

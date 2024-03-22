@@ -41,12 +41,16 @@ jobs:
         id: two-weeks-later-wednesday
         run: |
           iso_date=$(TZ=Asia/Seoul date -d '2 weeks next wednesday' +%Y-%m-%dT%H:%M:%SZ)
+          echo "iso_date: $iso_date"
           milestones=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/$GITHUB_REPOSITORY/milestones | jq -r '.[].due_on')
+          echo "milestones: $milestones"
           if [[ $milestones != *"$iso_date"* ]]; then
+            echo "Comparison result: false"
             echo "exists=false" >> $GITHUB_ENV
             echo "iso_date=$iso_date" >> $GITHUB_ENV
           else
-             echo "exists=true" >> $GITHUB_ENV
+            echo "Comparison result: true"
+            echo "exists=true" >> $GITHUB_ENV
           fi
         shell: bash
 
@@ -64,8 +68,11 @@ jobs:
         id: three-weeks-later-wednesday
         run: |
           iso_date=$(TZ=Asia/Seoul date -d '3 weeks next wednesday' +%Y-%m-%dT%H:%M:%SZ)
+          echo "iso_date: $iso_date"
           milestones=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/$GITHUB_REPOSITORY/milestones | jq -r '.[].due_on')
+          echo "milestones: $milestones"
           if [[ $milestones != *"$iso_date"* ]]; then
+            echo "Comparison result: false"
             echo "exists=false" >> $GITHUB_ENV
             echo "iso_date=$iso_date" >> $GITHUB_ENV
           else
